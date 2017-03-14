@@ -118,7 +118,7 @@ public class SWTCalculator {
 
 		item2.setControl(composite);
 
-		history = new List(composite, SWT.BORDER);
+		history = new List(composite, SWT.BORDER | SWT.V_SCROLL);
 
 		FormData listData = new FormData();
 		listData.width = 250;

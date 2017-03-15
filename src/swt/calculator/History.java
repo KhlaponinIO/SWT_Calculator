@@ -29,8 +29,6 @@ public class History {
 		formLayout.spacing = 5;
 		composite.setLayout(formLayout);
 
-		item2.setControl(composite);
-
 		history = new List(composite, SWT.BORDER | SWT.V_SCROLL);
 
 		FormData listData = new FormData();
@@ -39,7 +37,10 @@ public class History {
 		listData.left = new FormAttachment(composite, 0);
 		listData.top = new FormAttachment(composite, 0);
 		listData.right = new FormAttachment(100, 0);
+		listData.bottom = new FormAttachment(100, -25);
 		history.setLayoutData(listData);
+		
+		item2.setControl(composite);
 	}
 	
 	public void printHistory(double number1, double number2, double resultValue, Operations operator) {

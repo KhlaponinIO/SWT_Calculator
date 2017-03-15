@@ -27,4 +27,18 @@ public class Verifier {
 			return false;
 		}
 	}
+	
+	public static int numLenght(double number) {
+		
+		String value = String.valueOf(Math.abs(number));
+		if (value.contains(".")) {
+			int firstPart = value.substring(0, value.indexOf(".")).length();
+			int secondPart = value.substring(value.indexOf(".") + 1).length();
+			return firstPart + secondPart;
+		} else {
+			return value.length();
+		}
+		
+	}
+	
 }

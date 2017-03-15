@@ -62,8 +62,6 @@ public class SWTCalculator {
 
 		composite = new Composite(tabFolder, SWT.NONE);
 		GridLayout grid = new GridLayout(3, false);
-		/*grid.marginHeight = 5;
-		grid.marginWidth = 5;*/
 		composite.setLayout(grid);
 
 		Text textField1 = new Text(composite, SWT.SINGLE | SWT.BORDER);
@@ -120,6 +118,11 @@ public class SWTCalculator {
 		if (Verifier.isDigit(textField1.getText()) && Verifier.isDigit(textField2.getText())) {
 			double number1 = Double.parseDouble(textField1.getText());
 			double number2 = Double.parseDouble(textField2.getText());
+			
+			if (Verifier.numLenght(number1) > 17 | Verifier.numLenght(number2) > 17) {
+				calculateBigDecimals(number1, number2, dropDownList);
+			}
+			
 			switch (Operations.get(dropDownList.getText())) {
 			case SUM: {
 				resultValue = number1 + number2;
@@ -151,6 +154,10 @@ public class SWTCalculator {
 			}
 
 		}
+	}
+	
+	private void calculateBigDecimals(double number1, double number2, Combo dropDownList) {
+		// TODO finish it
 	}
 
 	private void checkButtonSelected(Button checkButton, Button calculateButton, Combo dropDownList, Text textField1,

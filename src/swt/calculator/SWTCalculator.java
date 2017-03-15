@@ -1,9 +1,6 @@
 package swt.calculator;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -11,18 +8,19 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 
+// TODO add javadocs to all public constructors and methods
 public class SWTCalculator {
 
 	private Shell shell;
 	private double resultValue;
 	private Text result;
-	private List history;
+//	private List history;
+	private History historyObj;
 
 	public SWTCalculator(Display display) {
 		initUI(display);
@@ -36,7 +34,7 @@ public class SWTCalculator {
 		TabFolder tabFolder = new TabFolder(shell, SWT.NONE);
 
 		makeCalculatorTab(tabFolder);
-		makeHistoryTab(tabFolder);
+		historyObj = new History(tabFolder);
 
 		tabFolder.pack();
 		shell.pack();
@@ -62,10 +60,10 @@ public class SWTCalculator {
 		textField1.addListener(SWT.Verify, event -> Verifier.verifyDigits(event));
 
 		Combo dropDownList = new Combo(composite, SWT.VERTICAL | SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
-		dropDownList.add("+");
-		dropDownList.add("-");
-		dropDownList.add("/");
-		dropDownList.add("*");
+		dropDownList.add(Operations.SUM.getLiteral());
+		dropDownList.add(Operations.SUBSTRACTION.getLiteral());
+		dropDownList.add(Operations.DIVISION.getLiteral());
+		dropDownList.add(Operations.MULTIPLICATION.getLiteral());
 		dropDownList.select(0);
 
 		Text textField2 = new Text(composite, SWT.SINGLE | SWT.BORDER);
@@ -104,55 +102,34 @@ public class SWTCalculator {
 		result.setLayoutData(resultGridData);
 	}
 
-	private void makeHistoryTab(TabFolder tabFolder) {
-		TabItem item2 = new TabItem(tabFolder, SWT.NONE);
-		item2.setText("History");
-		item2.setToolTipText("contains the list of previous calculations");
-
-		Composite composite = new Composite(tabFolder, SWT.NONE);
-		FormLayout formLayout = new FormLayout();
-		formLayout.marginHeight = 5;
-		formLayout.marginWidth = 5;
-		formLayout.spacing = 5;
-		composite.setLayout(formLayout);
-
-		item2.setControl(composite);
-
-		history = new List(composite, SWT.BORDER | SWT.V_SCROLL);
-
-		FormData listData = new FormData();
-		listData.width = 250;
-		listData.height = 250;
-		listData.left = new FormAttachment(composite, 0);
-		listData.top = new FormAttachment(composite, 0);
-		listData.right = new FormAttachment(100, 0);
-		history.setLayoutData(listData);
-	}
-
 	private void calculate(Text textField1, Text textField2, Combo dropDownList) {
 
 		if (Verifier.isDigit(textField1.getText()) && Verifier.isDigit(textField2.getText())) {
 			double number1 = Double.parseDouble(textField1.getText());
 			double number2 = Double.parseDouble(textField2.getText());
-			switch (dropDownList.getText()) {
-			case "+": {
+			switch (Operations.get(dropDownList.getText())) {
+			case SUM: {
 				resultValue = number1 + number2;
-				printHistory(number1, number2, resultValue, "+");
+				result.setText(String.valueOf(resultValue));
+				historyObj.printHistory(number1, number2, resultValue, Operations.SUM);
 				break;
 			}
-			case "-": {
+			case SUBSTRACTION: {
 				resultValue = number1 - number2;
-				printHistory(number1, number2, resultValue, "-");
+				result.setText(String.valueOf(resultValue));
+				historyObj.printHistory(number1, number2, resultValue, Operations.SUBSTRACTION);
 				break;
 			}
-			case "/": {
+			case DIVISION: {
 				resultValue = number1 / number2;
-				printHistory(number1, number2, resultValue, "/");
+				result.setText(String.valueOf(resultValue));
+				historyObj.printHistory(number1, number2, resultValue, Operations.DIVISION);
 				break;
 			}
-			case "*": {
+			case MULTIPLICATION: {
 				resultValue = number1 * number2;
-				printHistory(number1, number2, resultValue, "*");
+				result.setText(String.valueOf(resultValue));
+				historyObj.printHistory(number1, number2, resultValue, Operations.MULTIPLICATION);
 				break;
 			}
 			default: {
@@ -161,12 +138,6 @@ public class SWTCalculator {
 			}
 
 		}
-	}
-
-	private void printHistory(double number1, double number2, double resultValue, String operator) {
-		result.setText(String.valueOf(resultValue));
-		String report = number1 + " " + operator + " " + number2 + " = " + String.format("%.3f", resultValue);
-		history.add(report);
 	}
 
 	private void checkButtonSelected(Button checkButton, Button calculateButton, Combo dropDownList, Text textField1,

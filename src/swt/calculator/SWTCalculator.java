@@ -1,5 +1,8 @@
 package swt.calculator;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -23,6 +26,8 @@ public class SWTCalculator {
 	private History history;
 	private Composite composite;
 	private TabFolder tabFolder;
+	private BigDecimal bigResult;
+	private Button bigDecimalsSwitcher;
 
 	public SWTCalculator(Display display) {
 		initUI(display);
@@ -99,6 +104,14 @@ public class SWTCalculator {
 		checkButton.addListener(SWT.Selection,
 				event -> checkButtonSelected(checkButton, calculateButton, dropDownList, textField1, textField2));
 
+		bigDecimalsSwitcher = new Button(composite, SWT.CHECK);
+		bigDecimalsSwitcher.setText("Calculate big decimals");
+		bigDecimalsSwitcher.setSelection(false);
+		GridData gridData2 = new GridData(SWT.LEFT, SWT.TOP, true, false);
+		gridData2.horizontalAlignment = GridData.FILL;
+		gridData2.horizontalSpan = 3;
+		bigDecimalsSwitcher.setLayoutData(gridData2);
+		
 		setResultLabel(composite);
 	}
 
@@ -119,8 +132,9 @@ public class SWTCalculator {
 			double number1 = Double.parseDouble(textField1.getText());
 			double number2 = Double.parseDouble(textField2.getText());
 			
-			if (Verifier.numLenght(number1) > 17 | Verifier.numLenght(number2) > 17) {
-				calculateBigDecimals(number1, number2, dropDownList);
+			if (Verifier.numLenght(number1) > 10 | Verifier.numLenght(number2) > 10 | bigDecimalsSwitcher.getSelection()) {
+				calculateBigDecimals(textField1, textField2, dropDownList);
+				return;
 			}
 			
 			switch (Operations.get(dropDownList.getText())) {
@@ -156,8 +170,44 @@ public class SWTCalculator {
 		}
 	}
 	
-	private void calculateBigDecimals(double number1, double number2, Combo dropDownList) {
-		// TODO finish it
+	private void calculateBigDecimals(Text number1, Text number2, Combo dropDownList) {
+		
+		BigDecimal bd1 = new BigDecimal(number1.getText());
+		BigDecimal bd2 = new BigDecimal(number2.getText());
+		
+		switch (Operations.get(dropDownList.getText())) {
+		case SUM: {
+			bigResult = bd1.add(bd2);
+			result.setText(bigResult.toString());
+			System.out.println("Big"); //should be removed
+			history.printHistory(bd1.doubleValue(), bd2.doubleValue(), bigResult.doubleValue(), Operations.SUM);
+			break;
+		}
+		case SUBSTRACTION: {
+			bigResult = bd1.subtract(bd2);
+			result.setText(bigResult.toString());
+			System.out.println("Big"); //should be removed
+			history.printHistory(bd1.doubleValue(), bd2.doubleValue(), bigResult.doubleValue(), Operations.SUBSTRACTION);
+			break;
+		}
+		case DIVISION: {
+			bigResult = bd1.divide(bd2, 3, RoundingMode.HALF_UP);
+			result.setText(bigResult.toString());
+			System.out.println("Big"); //should be removed
+			history.printHistory(bd1.doubleValue(), bd2.doubleValue(), bigResult.doubleValue(), Operations.DIVISION);
+			break;
+		}
+		case MULTIPLICATION: {
+			bigResult = bd1.multiply(bd2);
+			result.setText(bigResult.toString());
+			System.out.println("Big"); //should be removed
+			history.printHistory(bd1.doubleValue(), bd2.doubleValue(), bigResult.doubleValue(), Operations.MULTIPLICATION);
+			break;
+		}
+		default: {
+			System.out.println("No such operation!");
+		}
+		}
 	}
 
 	private void checkButtonSelected(Button checkButton, Button calculateButton, Combo dropDownList, Text textField1,

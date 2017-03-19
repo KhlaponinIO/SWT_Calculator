@@ -9,7 +9,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -17,55 +16,47 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 
-/* TODO:
- * 1. add javadocs
- * 2. move all listeners activation/disactivation to the separate method
- * 3. check division by zero for big decimals
- * 4. create separate class for application starting and move shell loop there
- * 5. add underscore for all private fields (as convention) 
+/**
+ * This class contains the main logic of the SWTCalculator
+ *  
+ * @author Igor Khlaponin
  */
 public class SWTCalculator {
 
-    private Shell shell;
-    private double resultValue;
-    private Text result;
-    private History history;
-    private Composite composite;
-    private TabFolder tabFolder;
-    private BigDecimal bigResult;
+    private Shell _shell;
+    private double _resultValue;
+    private Text _result;
+    private History _history;
+    private Composite _composite;
+    private TabFolder _tabFolder;
+    private BigDecimal _bigResult;
     private Button _bigDecimalsSwitcher;
 
-    public SWTCalculator(Display display) {
-        initUI(display);
+    /**
+     * Constructs the new instance of this class using <code>Shell</code> parent
+     * @param shell - instance of the <code>Shell</code> 
+     */
+    public SWTCalculator(Shell shell) {
+        initUI(shell);
     }
 
-    private void initUI(Display display) {
-        shell = new Shell(display, SWT.SHELL_TRIM | SWT.CENTER);
-        shell.setText("SWT Calculator");
-        shell.setMinimumSize(310, 350);
+    private void initUI(Shell shell) {
+    	_shell = shell;
+        _shell.setText("SWT Calculator");
+        _shell.setMinimumSize(310, 350);
 
-        shell.addListener(SWT.Resize, event -> resizeTab(event));
+        _shell.addListener(SWT.Resize, event -> resizeTab(event));
 
-        tabFolder = new TabFolder(shell, SWT.NONE);
+        _tabFolder = new TabFolder(_shell, SWT.NONE);
 
-        makeCalculatorTab(tabFolder);
-        history = new History(tabFolder);
+        makeCalculatorTab(_tabFolder);
+        _history = new History(_tabFolder);
 
-        System.out.println("Foo");
-
-        tabFolder.pack();
-        shell.pack();
-        shell.open();
-
-        while (!shell.isDisposed()) {
-            if (!display.readAndDispatch()) {
-                display.sleep();
-            }
-        }
+        _tabFolder.pack();
     }
 
     private void resizeTab(Event event) {
-        tabFolder.setSize(shell.getSize().x - 15, shell.getSize().y - 15);
+        _tabFolder.setSize(_shell.getSize().x - 15, _shell.getSize().y - 15);
     }
 
     private void makeCalculatorTab(TabFolder tabFolder) {
@@ -73,28 +64,28 @@ public class SWTCalculator {
         TabItem calculatorItemTab = new TabItem(tabFolder, SWT.NONE);
         calculatorItemTab.setText("Calculator");
 
-        composite = new Composite(tabFolder, SWT.NONE);
+        _composite = new Composite(tabFolder, SWT.NONE);
         GridLayout grid = new GridLayout(3, false);
-        composite.setLayout(grid);
+        _composite.setLayout(grid);
 
-        Text textField1 = new Text(composite, SWT.SINGLE | SWT.BORDER);
+        Text textField1 = new Text(_composite, SWT.SINGLE | SWT.BORDER);
         textField1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         textField1.addListener(SWT.Verify, event -> Verifier.verifyDigits(event));
 
-        Combo dropDownList = new Combo(composite, SWT.VERTICAL | SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
-        for (Operations op : Operations.values()) {
-            dropDownList.add(op.getLiteral());
+        Combo dropDownList = new Combo(_composite, SWT.VERTICAL | SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
+        for (Operations operations : Operations.values()) {
+            dropDownList.add(operations.getLiteral());
         }
         dropDownList.select(0);
         dropDownList.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-        Text textField2 = new Text(composite, SWT.SINGLE | SWT.BORDER);
+        Text textField2 = new Text(_composite, SWT.SINGLE | SWT.BORDER);
         textField2.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         textField2.addListener(SWT.Verify, event -> Verifier.verifyDigits(event));
 
-        calculatorItemTab.setControl(composite);
+        calculatorItemTab.setControl(_composite);
 
-        Button checkButton = new Button(composite, SWT.CHECK);
+        Button checkButton = new Button(_composite, SWT.CHECK);
         checkButton.setText("Calculate on the fly");
         checkButton.setSelection(false);
 
@@ -103,7 +94,7 @@ public class SWTCalculator {
         gridData1.horizontalSpan = 2;
         checkButton.setLayoutData(gridData1);
 
-        Button calculateButton = new Button(composite, SWT.PUSH);
+        Button calculateButton = new Button(_composite, SWT.PUSH);
         calculateButton.setText("Calculate");
         calculateButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
@@ -111,7 +102,7 @@ public class SWTCalculator {
         checkButton.addListener(SWT.Selection,
                 event -> checkButtonSelected(checkButton, calculateButton, dropDownList, textField1, textField2));
 
-        _bigDecimalsSwitcher = new Button(composite, SWT.CHECK);
+        _bigDecimalsSwitcher = new Button(_composite, SWT.CHECK);
         _bigDecimalsSwitcher.setText("Calculate big decimals");
         _bigDecimalsSwitcher.setSelection(false);
         GridData gridData2 = new GridData(SWT.LEFT, SWT.TOP, true, false);
@@ -119,18 +110,18 @@ public class SWTCalculator {
         gridData2.horizontalSpan = 3;
         _bigDecimalsSwitcher.setLayoutData(gridData2);
 
-        setResultLabel(composite);
+        setResultLabel(_composite);
     }
 
     private void setResultLabel(Composite composite) {
         Label label = new Label(composite, SWT.LEFT);
         label.setText("Result: ");
 
-        result = new Text(composite, SWT.SINGLE | SWT.BORDER | SWT.RIGHT);
+        _result = new Text(composite, SWT.SINGLE | SWT.BORDER | SWT.RIGHT);
         GridData resultGridData = new GridData();
         resultGridData.horizontalAlignment = GridData.FILL;
         resultGridData.horizontalSpan = 2;
-        result.setLayoutData(resultGridData);
+        _result.setLayoutData(resultGridData);
     }
 
     private void calculate(Text textField1, Text textField2, Combo dropDownList) {
@@ -147,27 +138,23 @@ public class SWTCalculator {
 
             switch (Operations.get(dropDownList.getText())) {
             case SUM: {
-                resultValue = number1 + number2;
-                result.setText(String.valueOf(resultValue));
-                history.printHistory(number1, number2, resultValue, Operations.SUM);
+                _resultValue = number1 + number2;
+                setResult(number1, number2, _resultValue,  Operations.SUM);
                 break;
             }
             case SUBSTRACTION: {
-                resultValue = number1 - number2;
-                result.setText(String.valueOf(resultValue));
-                history.printHistory(number1, number2, resultValue, Operations.SUBSTRACTION);
+                _resultValue = number1 - number2;
+                setResult(number1, number2, _resultValue, Operations.SUBSTRACTION);
                 break;
             }
             case DIVISION: {
-                resultValue = number1 / number2;
-                result.setText(String.valueOf(resultValue));
-                history.printHistory(number1, number2, resultValue, Operations.DIVISION);
+                _resultValue = number1 / number2;
+                setResult(number1, number2, _resultValue, Operations.DIVISION);
                 break;
             }
             case MULTIPLICATION: {
-                resultValue = number1 * number2;
-                result.setText(String.valueOf(resultValue));
-                history.printHistory(number1, number2, resultValue, Operations.MULTIPLICATION);
+                _resultValue = number1 * number2;
+                setResult(number1, number2, _resultValue, Operations.MULTIPLICATION);
                 break;
             }
             default: {
@@ -177,6 +164,11 @@ public class SWTCalculator {
 
         }
     }
+    
+    private void setResult(double number1, double number2, double _resultValue, Operations operator) {
+    	_result.setText(String.valueOf(_resultValue));
+        _history.printHistory(number1, number2, _resultValue, operator);
+    }
 
     private void calculateBigDecimals(Text number1, Text number2, Combo dropDownList) {
 
@@ -185,33 +177,33 @@ public class SWTCalculator {
 
         switch (Operations.get(dropDownList.getText())) {
         case SUM: {
-            bigResult = bd1.add(bd2);
-            result.setText(bigResult.toString());
-            System.out.println("Big"); // should be removed
-            history.printHistory(bd1.doubleValue(), bd2.doubleValue(), bigResult.doubleValue(), Operations.SUM);
+            _bigResult = bd1.add(bd2);
+            setResult(bd1.doubleValue(), bd2.doubleValue(), _bigResult.doubleValue(), 
+            		Operations.SUM);
             break;
         }
         case SUBSTRACTION: {
-            bigResult = bd1.subtract(bd2);
-            result.setText(bigResult.toString());
-            System.out.println("Big"); // should be removed
-            history.printHistory(bd1.doubleValue(), bd2.doubleValue(), bigResult.doubleValue(),
-                    Operations.SUBSTRACTION);
+            _bigResult = bd1.subtract(bd2);
+            setResult(bd1.doubleValue(), bd2.doubleValue(), _bigResult.doubleValue(),  
+            		Operations.SUBSTRACTION);
             break;
         }
         case DIVISION: {
-            bigResult = bd1.divide(bd2, 3, RoundingMode.HALF_UP);
-            result.setText(bigResult.toString());
-            System.out.println("Big"); // should be removed
-            history.printHistory(bd1.doubleValue(), bd2.doubleValue(), bigResult.doubleValue(), Operations.DIVISION);
+        	if (bd2.equals(BigDecimal.ZERO)) {
+                setResult(bd1.doubleValue(), bd2.doubleValue(), 
+                		(bd1.signum() == -1) ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY,  
+                		Operations.DIVISION);
+        		break;
+        	}
+            _bigResult = bd1.divide(bd2, 3, RoundingMode.HALF_UP);
+            setResult(bd1.doubleValue(), bd2.doubleValue(), _bigResult.doubleValue(),  
+            		Operations.DIVISION);
             break;
         }
         case MULTIPLICATION: {
-            bigResult = bd1.multiply(bd2);
-            result.setText(bigResult.toString());
-            System.out.println("Big"); // should be removed
-            history.printHistory(bd1.doubleValue(), bd2.doubleValue(), bigResult.doubleValue(),
-                    Operations.MULTIPLICATION);
+            _bigResult = bd1.multiply(bd2);
+            setResult(bd1.doubleValue(), bd2.doubleValue(), _bigResult.doubleValue(), 
+            		Operations.MULTIPLICATION);
             break;
         }
         default: {
@@ -232,14 +224,6 @@ public class SWTCalculator {
                 dropDownList.removeListener(SWT.Selection, dropDownList.getListeners(SWT.Selection)[0]);
             }
         }
-    }
-
-    @SuppressWarnings("unused")
-    public static void main(String[] args) {
-
-        Display display = new Display();
-        SWTCalculator calculator = new SWTCalculator(display);
-        display.dispose();
     }
 
 }

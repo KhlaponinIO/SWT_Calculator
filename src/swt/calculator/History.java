@@ -9,10 +9,22 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
+/**
+ * This class is used for creating History tab for <code>SWTCalculator</code> and 
+ * storing the history of calculations
+ *    
+ * @author Igor Khlaponin 
+ */
 public class History {
 	
 	private List history;
 	
+	/**
+	 * Creates new instance of this class using <code>TabFolder</code> instance
+	 * It creates new tab in <code>SWTCalculator</code> for showing history of calculations
+	 * 
+	 * @param tabFolder - parent TabFolder
+	 */
 	public History(TabFolder tabFolder) {
 		makeHistoryTab(tabFolder);
 	}
@@ -43,6 +55,13 @@ public class History {
 		item2.setControl(composite);
 	}
 	
+	/**
+	 * This method formats calculation report and adds it to the history list
+	 * @param number1 - first number
+	 * @param number2 - second number
+	 * @param resultValue - result of calculation
+	 * @param operator - describes witch calculation have been done
+	 */
 	public void printHistory(double number1, double number2, double resultValue, Operations operator) {
 		String report = number1 + " " + operator.getLiteral() + " " + number2 + " = " + String.format("%.3f", resultValue);
 		history.add(report);

@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * This class contains the main logic of the SWTCalculator
- *  
+ * 
  * @author Igor Khlaponin
  */
 public class SWTCalculator {
@@ -34,14 +34,15 @@ public class SWTCalculator {
 
     /**
      * Constructs the new instance of this class using <code>Shell</code> parent
-     * @param shell - instance of the <code>Shell</code> 
+     * 
+     * @param shell - instance of the <code>Shell</code>
      */
     public SWTCalculator(Shell shell) {
         initUI(shell);
     }
 
     private void initUI(Shell shell) {
-    	_shell = shell;
+        _shell = shell;
         _shell.setText("SWT Calculator");
         _shell.setMinimumSize(310, 350);
 
@@ -139,7 +140,7 @@ public class SWTCalculator {
             switch (Operations.get(dropDownList.getText())) {
             case SUM: {
                 _resultValue = number1 + number2;
-                setResult(number1, number2, _resultValue,  Operations.SUM);
+                setResult(number1, number2, _resultValue, Operations.SUM);
                 break;
             }
             case SUBSTRACTION: {
@@ -164,9 +165,9 @@ public class SWTCalculator {
 
         }
     }
-    
+
     private void setResult(double number1, double number2, double _resultValue, Operations operator) {
-    	_result.setText(String.valueOf(_resultValue));
+        _result.setText(String.valueOf(_resultValue));
         _history.printHistory(number1, number2, _resultValue, operator);
     }
 
@@ -178,32 +179,28 @@ public class SWTCalculator {
         switch (Operations.get(dropDownList.getText())) {
         case SUM: {
             _bigResult = bd1.add(bd2);
-            setResult(bd1.doubleValue(), bd2.doubleValue(), _bigResult.doubleValue(), 
-            		Operations.SUM);
+            setResult(bd1.doubleValue(), bd2.doubleValue(), _bigResult.doubleValue(), Operations.SUM);
             break;
         }
         case SUBSTRACTION: {
             _bigResult = bd1.subtract(bd2);
-            setResult(bd1.doubleValue(), bd2.doubleValue(), _bigResult.doubleValue(),  
-            		Operations.SUBSTRACTION);
+            setResult(bd1.doubleValue(), bd2.doubleValue(), _bigResult.doubleValue(), Operations.SUBSTRACTION);
             break;
         }
         case DIVISION: {
-        	if (bd2.equals(BigDecimal.ZERO)) {
-                setResult(bd1.doubleValue(), bd2.doubleValue(), 
-                		(bd1.signum() == -1) ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY,  
-                		Operations.DIVISION);
-        		break;
-        	}
+            if (bd2.equals(BigDecimal.ZERO)) {
+                setResult(bd1.doubleValue(), bd2.doubleValue(),
+                        (bd1.signum() == -1) ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY,
+                        Operations.DIVISION);
+                break;
+            }
             _bigResult = bd1.divide(bd2, 3, RoundingMode.HALF_UP);
-            setResult(bd1.doubleValue(), bd2.doubleValue(), _bigResult.doubleValue(),  
-            		Operations.DIVISION);
+            setResult(bd1.doubleValue(), bd2.doubleValue(), _bigResult.doubleValue(), Operations.DIVISION);
             break;
         }
         case MULTIPLICATION: {
             _bigResult = bd1.multiply(bd2);
-            setResult(bd1.doubleValue(), bd2.doubleValue(), _bigResult.doubleValue(), 
-            		Operations.MULTIPLICATION);
+            setResult(bd1.doubleValue(), bd2.doubleValue(), _bigResult.doubleValue(), Operations.MULTIPLICATION);
             break;
         }
         default: {

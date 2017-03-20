@@ -11,9 +11,9 @@ public class Application {
 
         Display display = new Display();
         Shell shell = new Shell(display, SWT.SHELL_TRIM | SWT.CENTER);
-        
+
         SWTCalculator calculator = new SWTCalculator(shell);
-        
+
         shell.pack();
         shell.open();
 

@@ -9,12 +9,12 @@ import java.util.Map;
  * @author Igor Khlaponin
  */
 public enum Operations {
-	MULTIPLICATION("*"), 
-	DIVISION("/"), 
-	SUM("+"), 
-	SUBSTRACTION("-");
-	
-	private final String literal;
+    MULTIPLICATION("*"), 
+    DIVISION("/"), 
+    SUM("+"), 
+    SUBSTRACTION("-");
+
+    private final String literal;
 
     private static final Map<String, Operations> literals = new HashMap<>();
 
@@ -30,6 +30,7 @@ public enum Operations {
 
     /**
      * Returns <code>Operations</code> String value
+     * 
      * @return literal - operations String value
      */
     public String getLiteral() {
@@ -38,6 +39,7 @@ public enum Operations {
 
     /**
      * Returns <code>Operations</code> by its literal
+     * 
      * @param literal - String value of the Operations
      * @return Operations value
      */
